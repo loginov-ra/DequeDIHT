@@ -18,9 +18,9 @@ struct Point
     int x;
     int y;
 
-    Point(int new_x = 0, int new_y = 0):
-        x(new_x),
-        y(new_y)
+    Point(int newX = 0, int newY = 0):
+        x(newX),
+        y(newY)
     
     {}
 
@@ -36,28 +36,28 @@ struct Point
 
     double distanceToZero()
     {
-        int sqr_res = x * x + y * y;
-        return sqrt(sqr_res);
+        int sqrRes = x * x + y * y;
+        return sqrt(sqrRes);
     };
 };
 
 class PointDequeTest : public testing::Test
 {
 protected:
-    Deque<Point> own_deque;
-    deque<Point> std_deque;
+    Deque<Point> ownDeque;
+    deque<Point> stdDeque;
 
     void SetUp() {}
     void TearDown() {}
 
     testing::AssertionResult areEqual() const
     {
-        if (own_deque.size() != std_deque.size())
+        if (ownDeque.size() != stdDeque.size())
             return testing::AssertionFailure() << "Deques have different size\n";
 
-        for (size_t i = 0; i < own_deque.size(); i++)
+        for (size_t i = 0; i < ownDeque.size(); ++i)
         {
-            if (own_deque[i]  != std_deque[i])
+            if (ownDeque[i]  != stdDeque[i])
                 return testing::AssertionFailure() << "Deques differ in position " << i << "\n";
         }
 
@@ -70,29 +70,29 @@ protected:
         {
             if (back)
             {
-                std_deque.push_back(element);
-                own_deque.push_back(element);
+                stdDeque.push_back(element);
+                ownDeque.push_back(element);
             }
             else
             {
-                std_deque.push_front(element);
-                own_deque.push_front(element);
+                stdDeque.push_front(element);
+                ownDeque.push_front(element);
             }
         }
         else
         {
-            if (own_deque.size() == 0)
+            if (ownDeque.size() == 0)
                 return;
 
             if (back)
             {
-                std_deque.pop_back();
-                own_deque.pop_back();
+                stdDeque.pop_back();
+                ownDeque.pop_back();
             }
             else
             {
-                std_deque.pop_front();
-                own_deque.pop_front();
+                stdDeque.pop_front();
+                ownDeque.pop_front();
             }
         }
     }
@@ -103,11 +103,11 @@ class IteratorDequeTest : public PointDequeTest
 protected:
     void SetUp()
     {
-        for (int i = 0; i < ITERATOR_TEST_DEQUE_SIZE; i++)
+        for (int i = 0; i < ITERATOR_TEST_DEQUE_SIZE; ++i)
         {
             Point pt(rand(), rand());
-            std_deque.push_back(pt);
-            own_deque.push_back(pt);
+            stdDeque.push_back(pt);
+            ownDeque.push_back(pt);
         }
     }
 
@@ -117,7 +117,7 @@ protected:
     vector<Point> getRangeResult(Iterator start, Iterator finish, int step)
     {
         vector<Point> res;
-        for (Iterator it = start; it < finish; it++)
+        for (Iterator it = start; it < finish; ++it)
         {
             res.push_back(*it);
         }
@@ -125,18 +125,18 @@ protected:
     }
 
     template <class StdIterator, class OwnIterator>
-    testing::AssertionResult checkRange(OwnIterator own_start, OwnIterator own_finish,
-                                        StdIterator std_start, StdIterator std_finish, int step)
+    testing::AssertionResult checkRange(OwnIterator ownStart, OwnIterator ownFinish,
+                                        StdIterator stdStart, StdIterator stdFinish, int step)
     {
-        vector<Point> own_res = getRangeResult(own_start, own_finish, step);
-        vector<Point> std_res = getRangeResult(std_start, std_finish, step);
+        vector<Point> ownRes = getRangeResult(ownStart, ownFinish, step);
+        vector<Point> stdRes = getRangeResult(stdStart, stdFinish, step);
 
-        if (own_res.size() != std_res.size())
+        if (ownRes.size() != stdRes.size())
             return testing::AssertionFailure() << "Range sizes are different\n";
 
-        for (size_t i = 0; i < own_res.size(); i++)
+        for (size_t i = 0; i < ownRes.size(); ++i)
         {
-            if (own_res[i] != std_res[i])
+            if (ownRes[i] != stdRes[i])
                 return testing::AssertionFailure() << "Range differ in position " << i << "\n";
         }
 
@@ -146,7 +146,7 @@ protected:
 
 TEST_F(PointDequeTest, RandomOperationsTest)
 {
-    for (int test_i = 0; test_i < N_RANDOM_OPERATIONS; test_i++)
+    for (int test_i = 0; test_i < N_RANDOM_OPERATIONS; ++test_i)
     {
         makeOperation(rand() % 2, rand() % 2, Point(rand(), rand()));
         ASSERT_TRUE(areEqual()) << "Random test failed in test " << test_i << "\n";
@@ -155,49 +155,49 @@ TEST_F(PointDequeTest, RandomOperationsTest)
 
 TEST_F(IteratorDequeTest, Iterator)
 {
-    for (int test_i = 0; test_i < N_ITERATOR_TESTS; test_i++)
+    for (int test_i = 0; test_i < N_ITERATOR_TESTS; ++test_i)
     {
-        ASSERT_TRUE(checkRange(own_deque.begin(), own_deque.end(),
-                               std_deque.begin(), std_deque.end(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
+        ASSERT_TRUE(checkRange(ownDeque.begin(), ownDeque.end(),
+                               stdDeque.begin(), stdDeque.end(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
     }
 }
 
 TEST_F(IteratorDequeTest, ReverseIterator)
 {
-    for (int test_i = 0; test_i < N_ITERATOR_TESTS; test_i++)
+    for (int test_i = 0; test_i < N_ITERATOR_TESTS; ++test_i)
     {
-        ASSERT_TRUE(checkRange(own_deque.rbegin(), own_deque.rend(),
-                               std_deque.rbegin(), std_deque.rend(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
+        ASSERT_TRUE(checkRange(ownDeque.rbegin(), ownDeque.rend(),
+                               stdDeque.rbegin(), stdDeque.rend(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
     }
 }
 
 TEST_F(IteratorDequeTest, ConstIterator)
 {
-    for (int test_i = 0; test_i < N_ITERATOR_TESTS; test_i++)
+    for (int test_i = 0; test_i < N_ITERATOR_TESTS; ++test_i)
     {
-        ASSERT_TRUE(checkRange(own_deque.cbegin(), own_deque.cend(),
-                               std_deque.cbegin(), std_deque.cend(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
+        ASSERT_TRUE(checkRange(ownDeque.cbegin(), ownDeque.cend(),
+                               stdDeque.cbegin(), stdDeque.cend(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
     }
 }
 
 TEST_F(IteratorDequeTest, ConstReverseIterator)
 {
-    for (int test_i = 0; test_i < N_ITERATOR_TESTS; test_i++)
+    for (int test_i = 0; test_i < N_ITERATOR_TESTS; ++test_i)
     {
-        ASSERT_TRUE(checkRange(own_deque.crbegin(), own_deque.crend(),
-                               std_deque.crbegin(), std_deque.crend(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
+        ASSERT_TRUE(checkRange(ownDeque.crbegin(), ownDeque.crend(),
+                               stdDeque.crbegin(), stdDeque.crend(), rand() % (MAX_STEP - 1) + 1)) << "Range test failed in test " << test_i << "\n";
     }
 }
 
 TEST_F(PointDequeTest, AssignationTest)
 {
-    for (int i = 0; i < N_RANDOM_OPERATIONS; i++)
+    for (int i = 0; i < N_RANDOM_OPERATIONS; ++i)
         makeOperation(true, rand() % 2, Point(rand(), rand()));
 
-    for (int i = 0; i < own_deque.size(); i++)
+    for (int i = 0; i < ownDeque.size(); ++i)
     {
-        *(own_deque.begin() + i) = Point(i, (own_deque.begin() + i)->y);
-        *(std_deque.begin() + i) = Point(i, (std_deque.begin() + i)->y);
+        *(ownDeque.begin() + i) = Point(i, (ownDeque.begin() + i)->y);
+        *(stdDeque.begin() + i) = Point(i, (stdDeque.begin() + i)->y);
     }
 
     ASSERT_TRUE(areEqual());
@@ -205,14 +205,14 @@ TEST_F(PointDequeTest, AssignationTest)
 
 TEST_F(PointDequeTest, AlgorithmOperationsTest)
 {
-    for (int i = 0; i < N_RANDOM_OPERATIONS; i++)
+    for (int i = 0; i < N_RANDOM_OPERATIONS; ++i)
     {
         Point pt(rand(), rand());
-        std_deque.push_front(pt);
-        own_deque.push_back(pt);
-    }
+        stdDeque.push_front(pt);
+        ownDeque.push_back(pt);
+    }   
 
-    std::reverse(own_deque.begin(), own_deque.end());
+    std::reverse(ownDeque.begin(), ownDeque.end());
 
-    ASSERT_TRUE(areEqual());
+    ASSERT_TRUE(areEqual());    
 }

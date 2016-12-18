@@ -10,7 +10,7 @@ const int CAPACITY_MULTIPLYER = 2;
 template <class Type>
 class Deque
 {
-public:
+private:
     typedef DequeIterator<Type, Type*, Type&> iterator;
     typedef DequeIterator<Type, const Type*, const Type&> const_iterator;
     typedef std::reverse_iterator<DequeIterator<Type, Type*, Type&>> reverse_iterator;
@@ -105,12 +105,12 @@ void Deque<Type>::reallocateBuffer(size_t new_capacity)
     if (new_capacity < CAPACITY_MULTIPLYER * CAPACITY_MULTIPLYER)
         return;
 
-    Type* buffer_copy = new Type[capacity_];
-    std::copy(buffer_, buffer_ + capacity_, buffer_copy);
+    Type* bufferCopy = new Type[capacity_];
+    std::copy(buffer_, buffer_ + capacity_, bufferCopy);
     delete[] buffer_;
     buffer_ = new Type[new_capacity];
 
-    for (size_t i = 0; i < size_; i++)
+    for (size_t i = 0; i < size_; ++i)
         buffer_[i] = buffer_copy[(head_ + i) % capacity_]; 
 
     head_ = 0;
@@ -121,7 +121,7 @@ void Deque<Type>::reallocateBuffer(size_t new_capacity)
 template <class Type>
 void Deque<Type>::extendBuffer()
 {
-    if (head_ == (tail_ + 1) % capacity_)
+    if (head_ == static_cast<int>((tail_ + 1) % capacity_))
         reallocateBuffer(capacity_ * CAPACITY_MULTIPLYER);
 }
 
@@ -137,7 +137,7 @@ void Deque<Type>::push_back(const Type& elem)
 {
     buffer_[tail_] = elem;
     tail_ = (tail_ + 1) % capacity_;
-    size_++;
+    ++size_;
     extendBuffer();
 }
 
@@ -146,7 +146,7 @@ void Deque<Type>::push_front(const Type& elem)
 {
     head_ = (head_ + capacity_ - 1) % capacity_;
     buffer_[head_] = elem;
-    size_++;
+    ++size_;
     extendBuffer();
 }
 
@@ -172,7 +172,7 @@ template <class Type>
 int Deque<Type>::indexInBuffer(int i) const
 {
     assert(i >= 0);
-    assert(i < size_);
+    assert(i < static_cast<int>(size_));
 
     return (head_ + i) % capacity_;
 }

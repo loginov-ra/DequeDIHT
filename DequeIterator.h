@@ -7,10 +7,10 @@ template <class Type, class Pointer, class Reference>
 class DequeIterator : public std::iterator<std::random_access_iterator_tag, Type, std::ptrdiff_t, Pointer, Reference>
 {
 private:
-    const int* head_ind_;
+    const int* headInd_;
     Pointer elem_;
-    const size_t* deque_capacity_;
-    const size_t* deque_size_;
+    const size_t* dequeCapacity_;
+    const size_t* dequeSize_;
     Type* buffer_;
 
     int getRealIndex() const
@@ -18,47 +18,47 @@ private:
         if (elem_ < buffer_)
             return -1;
 
-        if (elem_ >= buffer_ + *deque_capacity_)
+        if (elem_ >= buffer_ + *dequeCapacity_)
             return INF;
 
-        Pointer head_ = buffer_ + *head_ind_;
-        return (head_ > elem_) ? (*deque_capacity_ - (head_ - elem_)) : (elem_ - head_);
+        Pointer head_ = buffer_ + *headInd_;
+        return (head_ > elem_) ? (*dequeCapacity_ - (head_ - elem_)) : (elem_ - head_);
     }
 
     Pointer getPointerByIndex(int index) const
     {
-        int real_index = (*head_ind_ + index) % *deque_capacity_;
-        return buffer_ + real_index;
+        int realIndex = (*headInd_ + index) % *dequeCapacity_;
+        return buffer_ + realIndex;
     }
 public:
-    DequeIterator(const int* head_ind, Pointer elem, const size_t* deque_capacity, const size_t* deque_size, Type* buffer):
-        head_ind_(head_ind),
+    DequeIterator(const int* headInd, Pointer elem, const size_t* dequeCapacity, const size_t* dequeSize, Type* buffer):
+        headInd_(headInd),
         elem_(elem),
-        deque_capacity_(deque_capacity),
-        deque_size_(deque_size),
+        dequeCapacity_(dequeCapacity),
+        dequeSize_(dequeSize),
         buffer_(buffer)
 
         {}
 
     DequeIterator& operator +=(int n)
     {
-        int my_index = getRealIndex();
-        int new_index = my_index + n;
+        int myIndex = getRealIndex();
+        int newIndex = myIndex + n;
 
-        if (new_index < 0)
+        if (newIndex < 0)
         {
             elem_ = buffer_ - 1;
             return *this;
         }
 
-        if (new_index > *deque_size_)
+        if (newIndex > static_cast<int>(*dequeSize_))
         {
-            elem_ = buffer_ + *deque_capacity_;
+            elem_ = buffer_ + *dequeCapacity_;
             return *this;
         }
 
-        Pointer new_elem = getPointerByIndex(my_index + n);
-        elem_ = new_elem;
+        Pointer newElem = getPointerByIndex(myIndex + n);
+        elem_ = newElem;
         return *this;
     }
 
